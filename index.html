@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Base de Monitoreo - Alarma Vecinal</title>
+    <link href="https://fonts.googleapis.com/css?family=Oswald:700" rel="stylesheet">
+    <style>
+        /* Aquí irá el CSS mejorado del punto 2 */
+    </style>
+</head>
+<body class="dark-theme"> 
+    
+    <header>
+        <h1>BASE DE MONITOREO CENTRAL</h1>
+        <div id="estado-conexion" class="estado-desconectado">
+            Conexión: <span>Desconectada</span>
+        </div>
+    </header>
+
+    <main>
+        <div id="alerta-display" class="estado-normal">
+            <h2>Sistema Activo | En Espera</h2>
+        </div>
+    </main>
+
+    <hr> <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js" type="text/javascript"></script>
+    <script src="monitoreo_client.js"></script>
+</body>
+</html>
+
+<style>
+    /* ---------------------------------- */
+    /* ESTILOS BASE Y FUENTE */
+    /* ---------------------------------- */
+    body {
+        font-family: 'Oswald', sans-serif; /* Fuente impactante (necesita el <link> en HTML) */
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        transition: background-color 0.5s; /* Transición suave */
+    }
+
+    /* Tema Oscuro (Base de Monitoreo) */
+    .dark-theme {
+        background-color: #393434; 
+        color: #522f2f; /* Color gris claro */
+    }
+
+    header {
+        padding: 20px;
+        background: #371410; /* Azul fuerte para la cabecera */
+        color: white;
+    }
+    
+    h1 {
+        margin-top: 0;
+        font-size: 3em;
+        letter-spacing: 5px;
+    }
+
+    /* ---------------------------------- */
+    /* ESTADO DE CONEXIÓN */
+    /* ---------------------------------- */
+    #estado-conexion {
+        font-size: 1.2em;
+        margin-top: 10px;
+    }
+    .estado-conectado span {
+        color: #4CAF50; /* Verde para conectado */
+        font-weight: bold;
+    }
+    .estado-desconectado span {
+        color: #ffffff; /* Rojo para desconectado */
+        font-weight: bold;
+    }
+
+    /* ---------------------------------- */
+    /* DISPLAY PRINCIPAL (ALERTA) */
+    /* ---------------------------------- */
+    #alerta-display {
+        min-height: 250px;
+        display: flex; /* Flexbox para centrar el texto verticalmente */
+        align-items: center;
+        justify-content: center;
+        padding: 50px;
+        margin: 30px auto;
+        border: 4px solid #938686;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 900px;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+    
+    h2 {
+        font-size: 3em;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    /* ---------------------------------- */
+    /* CLASES DE ALARMA (Aplicadas con JS) */
+    /* ---------------------------------- */
+
+    /* Estado Normal (En espera) */
+    .estado-normal {
+        background-color: #2b2b2b;
+        border-color: #555;
+        color: #aaa;
+    }
+
+    /* ALARMA ACTIVA (Clase crítica) */
+    .alerta-activa {
+        background-color: #0a0815; /* Rojo intenso */
+        border-color: #0a0815;
+        color: white;
+        animation: blink 0.7s steps(1, end) infinite; /* Parpadeo rápido */
+    }
+
+    /* Animación de Parpadeo */
+    @keyframes blink {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.2; transform: scale(1.05); } /* Parpadeo con ligero zoom */
+    }
+</style>
