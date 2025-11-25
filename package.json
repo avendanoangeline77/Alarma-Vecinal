@@ -1,0 +1,21 @@
+{
+  "name": "monitoreo-alarma-vecinal-web",
+  "version": "1.0.0",
+  "description": "Base de Monitoreo de Alarma Vecinal con MQTT en el navegador.",
+  "main": "index.html",
+  "scripts": {
+    "start": "lite-server",
+    "serve": "serve"
+  },
+  "keywords": [
+    "mqtt",
+    "web",
+    "alarma"
+  ],
+  "author": "Tu Nombre",
+  "license": "ISC",
+  "devDependencies": {
+    "lite-server": "^2.6.1",
+    "serve": "^14.2.1"
+  }
+}
