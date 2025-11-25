@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -122,4 +122,157 @@
         0% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.2; transform: scale(1.05); } /* Parpadeo con ligero zoom */
     }
+</style> -->
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Base de Monitoreo Alarma Vecinal</title>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<style>
+/* Estilos principales */
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    margin: 0; 
+    background-color: #f0f2f5; 
+    text-align: center; 
+}
+.container { 
+    background: white; 
+    padding: 2.5rem 4rem; 
+    border-radius: 12px; 
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15); 
+    min-width: 450px; 
+    transition: all 0.5s ease-in-out;
+}
+h1 { 
+    color: #1c1e21; 
+    margin-bottom: 0.5rem; 
+    font-size: 2.5rem;
+}
+#status { 
+    font-weight: bold; 
+    min-height: 24px; 
+    margin-bottom: 1.5rem; 
+    padding: 0.5rem;
+    border-radius: 6px;
+    background-color: #e9ecef;
+}
+/* Alerta Principal */
+#alerta-display {
+    font-size: 1.8rem;
+    font-weight: 700;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border-radius: 8px;
+    background-color: #97917b; /* Amarillo claro (Normal) */
+    color: #140d0d; /* Texto marrón (Normal) */
+    border: 3px solid #9d9373;
+    min-height: 100px; /* Asegura un tamaño visible */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+/* Estado de ALERTA ACTIVA (visual) */
+.alerta-activa {
+    background-color: #709584 !important; /* Rojo claro */
+    color: #48171c !important; /* Rojo oscuro */
+    border-color: #f5c6cb !important;
+    animation: pulse-red 1s infinite alternate; /* Animación de parpadeo */
+}
+
+@keyframes pulse-red {
+    from { box-shadow: 0 0 10px rgba(160, 25, 25, 0.922); }
+    to { box-shadow: 0 0 20px rgba(185, 10, 10, 0.8); }
+}
+
 </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Base de Monitoreo Central</h1>
+    <p id="status">Conectando al Broker MQTT...</p>
+
+    <div id="alerta-display">
+        Esperando Alerta de Vecino...
+    </div>
+    
+    <p style="margin-top: 20px; font-style: italic;">La alarma sonora de la base se activa automáticamente por 15 segundos al recibir una alerta.</p>
+</div>
+
+<script>
+const statusElement = document.getElementById('status');
+const alertaDisplay = document.getElementById('alerta-display');
+
+// --- Configuración MQTT ---
+// ¡IMPORTANTE! Reemplaza la IP y el puerto WSS (WebSockets) de tu broker
+// Usa el puerto 9001 si estás usando Mosquitto por defecto con WebSockets.
+const brokerUrl = 'ws://10.56.13.14:9001'; 
+const topicAlerta = 'alarma/estado'; // Topic único para alertas y estado
+
+const client = mqtt.connect(brokerUrl);
+
+// --- Eventos MQTT ---
+
+client.on('connect', function () {
+    statusElement.textContent = 'Conectado al Broker.';
+    statusElement.style.color = '#28a745';
+    // Suscripción al topic que maneja tanto la alerta del vecino como el estado de la base
+    client.subscribe(topicAlerta, { qos: 1 }, function (err) {
+        if (err) {
+            console.error("Error al suscribirse:", err);
+            statusElement.textContent = 'Error al suscribirse al topic.';
+        } else {
+            console.log(`Suscrito exitosamente a "${topicAlerta}"`);
+        }
+    });
+});
+
+client.on('message', function (receivedTopic, message) {
+    const payload = message.toString();
+
+    if (receivedTopic === topicAlerta) {
+        if (payload === 'ACTIVADO') {
+            console.log("Alerta de Vecino Recibida!");
+            alertaDisplay.textContent = '¡ALERTA DE VECINO! Esperando confirmación de sonido de base...';
+            alertaDisplay.classList.add('alerta-activa');
+        } 
+        else if (payload === 'ALARMA_BASE_SONANDO') {
+             console.log("Alarma Sonora de Base Activada.");
+             alertaDisplay.textContent = '¡ALARMA SONORA DE BASE ACTIVA! (Sonando por 15 segundos)';
+             alertaDisplay.classList.add('alerta-activa');
+        }
+        else if (payload === 'ALARMA_BASE_APAGADA') {
+             console.log("Alarma Sonora de Base Desactivada.");
+             alertaDisplay.textContent = 'LISTO. Alarma Sonora Apagada por Tiempo. Esperando nuevas alertas.';
+             alertaDisplay.classList.remove('alerta-activa');
+        }
+    }
+});
+
+// --- Manejo de Desconexión y Errores ---
+client.on('close', function() {
+    statusElement.textContent = 'Desconectado. Reintentando...';
+    statusElement.style.color = '#dc3545';
+});
+
+client.on('error', function (error) {
+    console.error('Error de conexión:', error);
+    statusElement.textContent = 'ERROR: ' + error.message;
+    statusElement.style.color = '#dc3545';
+});
+
+</script>
+
+</body>
+</html>

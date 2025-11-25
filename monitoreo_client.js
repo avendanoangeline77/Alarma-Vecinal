@@ -1,4 +1,4 @@
-// --- Configuraciones de Conexión de la Base ---
+/* // --- Configuraciones de Conexión de la Base ---
 const BROKER_HOST = "10.56.13.2";
 const BROKER_PORT_WS = 9001;
 const CLIENT_ID = "base_monitoreo_" + parseInt(Math.random() * 1000, 10); 
@@ -89,4 +89,4 @@ function desactivarAlertaVisual() {
     console.log("Alerta visual desactivada.");
     alertaDisplay.className = 'estado-normal';
     alertaDisplay.innerHTML = `<h2>Sistema Activo | En Espera</h2>`;
-}
+} */
